@@ -1,3 +1,4 @@
+import os
 import requests
 import urllib.parse
 from typing import Any
@@ -12,9 +13,16 @@ class Obsidian():
             verify_ssl: bool = False,
         ):
         self.api_key = api_key
-        self.protocol = protocol
-        self.host = host
-        self.port = port
+        env_url = os.getenv("OBSIDIAN_API_URL") or os.getenv("OBSIDIAN_URL")
+        if env_url:
+            parsed = urllib.parse.urlparse(env_url)
+            self.protocol = parsed.scheme or protocol
+            self.host = parsed.hostname or host
+            self.port = parsed.port or port
+        else:
+            self.protocol = protocol
+            self.host = host
+            self.port = port
         self.verify_ssl = verify_ssl
         self.timeout = (3, 6)
 
